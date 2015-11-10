@@ -314,8 +314,9 @@ struct rt_rq {
 
 struct wrr_rq {
 	unsigned long wrr_nr_running;
+	int rq_weight;
 	struct rq *rq;
-	struct list_head leaf_wrr_rq_list;
+	struct list_head list;
 	struct task_group *tg;
 };
 
