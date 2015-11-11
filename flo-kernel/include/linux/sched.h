@@ -33,7 +33,7 @@
 /*
  * Scheduling policies
  */
-//#define SCHED_NORMAL		0
+#define SCHED_NORMAL		0
 #define SCHED_FIFO		1
 #define SCHED_RR		2
 #define SCHED_BATCH		3
@@ -1251,7 +1251,7 @@ struct sched_rt_entity {
 
 
 
-#define WRR_TIMESLICE		(100 * HZ / 1000)
+#define WRR_TIMESLICE		(10 * HZ / 1000)
 struct sched_wrr_entity {
 	struct list_head run_list;
 	unsigned long timeout;

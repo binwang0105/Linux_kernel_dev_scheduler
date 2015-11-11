@@ -89,6 +89,7 @@
 
 ATOMIC_NOTIFIER_HEAD(migration_notifier_head);
 
+
 void start_bandwidth_timer(struct hrtimer *period_timer, ktime_t period)
 {
 	unsigned long delta;
@@ -6874,6 +6875,7 @@ static int cpuset_cpu_inactive(struct notifier_block *nfb, unsigned long action,
 
 void __init sched_init_smp(void)
 {
+
 	cpumask_var_t non_isolated_cpus;
 
 	alloc_cpumask_var(&non_isolated_cpus, GFP_KERNEL);
@@ -6903,6 +6905,7 @@ void __init sched_init_smp(void)
 	free_cpumask_var(non_isolated_cpus);
 
 	init_sched_rt_class();
+
 }
 #else
 void __init sched_init_smp(void)
@@ -6937,6 +6940,11 @@ void __init sched_init(void)
 #ifdef CONFIG_RT_GROUP_SCHED
 	alloc_size += 2 * nr_cpu_ids * sizeof(void **);
 #endif
+
+#ifdef CONFIG_WRR_GROUPS
+	alloc_size += 2 * nr_cpu_ids * sizeof(void **);
+#endif
+
 #ifdef CONFIG_CPUMASK_OFFSTACK
 	alloc_size += num_possible_cpus() * cpumask_size();
 #endif
@@ -6959,12 +6967,21 @@ void __init sched_init(void)
 		ptr += nr_cpu_ids * sizeof(void **);
 
 #endif /* CONFIG_RT_GROUP_SCHED */
+#ifdef CONFIG_WRR_GROUPS
+		root_task_group.wrr_se = (struct sched_rt_entity **)ptr;
+		ptr += nr_cpu_ids * sizeof(void **);
+
+		root_task_group.wrr_rq = (struct wrr_rq **)ptr;
+		ptr += nr_cpu_ids * sizeof(void **);
+#endif /* CONFIG_WRR_GROUPS */
 #ifdef CONFIG_CPUMASK_OFFSTACK
 		for_each_possible_cpu(i) {
 			per_cpu(load_balance_tmpmask, i) = (void *)ptr;
 			ptr += cpumask_size();
 		}
 #endif /* CONFIG_CPUMASK_OFFSTACK */
+
+
 	}
 
 #ifdef CONFIG_SMP
@@ -7098,7 +7115,8 @@ void __init sched_init(void)
 
 #ifdef CONFIG_SMP
 	zalloc_cpumask_var(&sched_domains_tmpmask, GFP_NOWAIT);
-	/* May be allocated at isolcpus cmdline parse time */
+	/* May be allocated at isolc
+pus cmdline parse time */
 	if (cpu_isolated_map == NULL)
 		zalloc_cpumask_var(&cpu_isolated_map, GFP_NOWAIT);
 #endif
@@ -7346,6 +7364,7 @@ void sched_move_task(struct task_struct *tsk)
 	int on_rq, running;
 	unsigned long flags;
 	struct rq *rq;
+
 
 	rq = task_rq_lock(tsk, &flags);
 

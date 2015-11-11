@@ -124,6 +124,12 @@ struct task_group {
 	struct rt_bandwidth rt_bandwidth;
 #endif
 
+
+#ifdef CONFIG_WRR_GROUPS
+	struct sched_wrr_entity **wrr_se;
+	struct wrr_rq **wrr_rq;
+#endif
+
 	struct rcu_head rcu;
 	struct list_head list;
 
@@ -1170,7 +1176,7 @@ extern void print_wrr_stats(struct seq_file *m, int cpu);
 
 extern void init_cfs_rq(struct cfs_rq *cfs_rq);
 extern void init_rt_rq(struct rt_rq *rt_rq, struct rq *rq);
-extern void init_wrr_rq(struct wrr_rq *wrr_rq, struct rq *rq);
+extern void init_wrr_rq(struct wrr_rq *wrr_rq);
 extern void unthrottle_offline_cfs_rqs(struct rq *rq);
 
 extern void account_cfs_bandwidth_used(int enabled, int was_enabled);
