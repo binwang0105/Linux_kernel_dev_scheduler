@@ -1,2 +1,2 @@
-# os_hmwk4_scheduler
+# os_weighted_round_robin_scheduler
 weight round robin scheduler
